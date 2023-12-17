@@ -2,16 +2,38 @@ import java.util.*;
 
 public class Algorithm {
     private PriorityQueue<Node> openList;
-    private Set<Node> closedList;
+    private Queue<Node> closedList;
     private Node target;
     private Node start;
+    private int step;
+    private int count;
+    private Long executionTime;
     public Algorithm(){
         target=new Node();
         start=new Node();
         openList=new PriorityQueue<>((o1, o2) -> o1.getF()- o2.getF());
-        closedList=new HashSet<>();
+        closedList=new LinkedList<>();
+    }
+    public Node find( Queue<Node> closedList,Queue<Node> openList,Node node){
+        if(closedList.contains(node)){
+            for(Node x:closedList){
+                if(x.equals(node)&&x.getF()<node.getF()){
+                    return x;
+                }
+            }
+        }
+        else if(openList.contains(node)){
+            for(Node x:openList){
+                if(x.equals(node)&&x.getF()< node.getF()){
+                    return x;
+                }
+            }
+        }
+        return  null;
     }
     public Node solver(){
+        step=0;
+        count=1;
         openList.add(start);
         while (!openList.isEmpty()){
             Node currentState=openList.poll();
@@ -20,10 +42,15 @@ public class Algorithm {
                 return currentState;
             }
             else{
+                step++;
                 List<Node> nextStates=currentState.generateState();
                 for(Node next:nextStates){
+                    count++;
                     next.calculateF(target);
                     next.setParents(currentState);
+                    if(find(closedList,openList,next)!=null){
+                        continue;
+                    }
                     openList.add(next);
                 }
             }
@@ -39,7 +66,10 @@ public class Algorithm {
         target.input();
 
         if(isSolvable(start,target)){
+            long startTime = System.currentTimeMillis();
             Node result=solver();
+            long endTime = System.currentTimeMillis();
+            executionTime = endTime - startTime;
             int cost=result.getG();
             List<Node> results=new ArrayList<>();
             results.add(result);
@@ -51,7 +81,10 @@ public class Algorithm {
             for(Node x:results){
                 x.output();
             }
+            System.out.println("Tổng số node: "+count);
+            System.out.println("Số các node duyệt: "+step);
             System.out.println("Số lần di chuyển: "+cost);
+            System.out.println("Thời gian chạy: "+executionTime+" ms");
         }
         else {
             System.out.println("Không thể tới đích!");

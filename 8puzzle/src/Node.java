@@ -79,9 +79,12 @@ public class Node {
     }
     //ham sinh ra cac trang thai moi
     public List<Node> generateState(){
+        //Cac trang thai ke tiep cua nut hien tai
         List<Node> states=new ArrayList<>();
+        //Các huong xuong, phai, len, trai
         int[] dx={1,0,-1,0};
         int[] dy={0,1,0,-1};
+        //Xac dinh vi tri cua o so 0 cua node hien tai
         int x=0,y=0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -92,10 +95,11 @@ public class Node {
                 }
             }
         }
+        //duyet qua 4 huong
         for (int d = 0; d < 4; ++d) {
             int nx = x + dx[d];
             int ny = y + dy[d];
-
+            //kiem tra xem co di duoc khong
             if (nx >= 0 && nx < 3 && ny >= 0 && ny < 3) {
                 Node newState=new Node();
                 newState.setParents(this);
@@ -114,7 +118,9 @@ public class Node {
                 t.get(x).set(y,e2);
                 t.get(nx).set(ny,e1);
                 newState.setBoard(t);
-                if(parents==null||!newState.isGoalState(parents)){
+                //kiem tra trang thai ke tiep co khac parents hay khong
+                if(parents==null||!newState.equals(parents)){
+                    //neu no khac parents thi them vao danh sach states
                     states.add(newState);
                 }
 
@@ -137,10 +143,15 @@ public class Node {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return g == node.g && Objects.equals(board, node.board) && Objects.equals(parents, node.parents);
+        Node node=(Node) o;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                if(board.get(i).get(j)!=node.board.get(i).get(j)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
